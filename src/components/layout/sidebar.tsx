@@ -13,6 +13,7 @@ import {
   Settings,
   Shield,
   ScrollText,
+  PlusCircle,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,8 +27,9 @@ interface NavItem {
 
 const guestNav: NavItem[] = [
   { title: "Dashboard", href: "/guest", icon: Home },
-  { title: "Diwaniyas", href: "/guest/diwaniyas", icon: Building2 },
+  { title: "My Diwaniyas", href: "/guest/diwaniyas", icon: Building2 },
   { title: "My Registrations", href: "/guest/registrations", icon: ClipboardList },
+  { title: "Host a Diwaniya", href: "/host/new", icon: PlusCircle },
   { title: "Profile", href: "/guest/profile", icon: UserCircle },
 ];
 

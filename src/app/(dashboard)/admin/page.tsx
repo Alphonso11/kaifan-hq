@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusToggle } from "@/components/diwaniya/status-toggle";
 import { DiwaniyaStatusBadge } from "@/components/diwaniya/status-badge";
-import { Users, Clock, CheckCircle, XCircle, Building2 } from "lucide-react";
+import { InviteLinkManager } from "@/components/diwaniya/invite-link-manager";
+import { Users, Clock, CheckCircle, XCircle, Building2, Link2 } from "lucide-react";
 import type { Diwaniya } from "@/types/database";
 
 async function getAdminDiwaniya(userId: string): Promise<Diwaniya | null> {
@@ -146,6 +147,18 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Link2 className="h-5 w-5 text-primary" />
+            Invite guests
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <InviteLinkManager diwaniyaId={diwaniya.id} />
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>

@@ -81,6 +81,22 @@ export interface ActivityLogWithDetails extends ActivityLog {
   diwaniya: Pick<Diwaniya, "id" | "name" | "slug"> | null;
 }
 
+export interface InviteLink extends Record<string, unknown> {
+  id: string;
+  diwaniya_id: string;
+  token: string;
+  created_by: string | null;
+  created_at: string;
+  expires_at: string;
+}
+
+export interface DiwaniyaAccess extends Record<string, unknown> {
+  id: string;
+  diwaniya_id: string;
+  user_id: string;
+  created_at: string;
+}
+
 // Database schema type for Supabase
 // Using a more permissive type structure that allows Supabase queries to work properly
 export type Database = {
@@ -168,9 +184,40 @@ export type Database = {
           }
         ];
       };
+      invite_links: {
+        Row: InviteLink;
+        Insert: Omit<InviteLink, "id" | "created_at">;
+        Update: Partial<Omit<InviteLink, "id" | "created_at">>;
+        Relationships: [];
+      };
+      diwaniya_access: {
+        Row: DiwaniyaAccess;
+        Insert: Omit<DiwaniyaAccess, "id" | "created_at">;
+        Update: Partial<Omit<DiwaniyaAccess, "id" | "created_at">>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      create_diwaniya: {
+        Args: {
+          p_name: string;
+          p_slug: string;
+          p_location?: string | null;
+          p_description?: string | null;
+          p_max_capacity?: number | null;
+        };
+        Returns: string;
+      };
+      create_invite_link: {
+        Args: { p_diwaniya_id: string };
+        Returns: string;
+      };
+      use_invite: {
+        Args: { p_token: string };
+        Returns: string | null;
+      };
+    };
     Enums: {
       user_role: UserRole;
       registration_status: RegistrationStatus;

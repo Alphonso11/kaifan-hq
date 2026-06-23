@@ -28,7 +28,7 @@ export function LoginForm() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const redirectTo = searchParams.get("redirect") || "/guest";
+  const explicitRedirect = searchParams.get("redirect");
   const error = searchParams.get("error");
 
   const {
@@ -70,11 +70,14 @@ export function LoginForm() {
           .eq("id", user.id)
           .single<{ role: UserRole }>();
 
-        let destination = redirectTo;
-        if (userData?.role === "super_admin") {
-          destination = "/super-admin";
-        } else if (userData?.role === "admin") {
-          destination = "/admin";
+        // An explicit ?redirect= (e.g. an invite link) always wins.
+        let destination = explicitRedirect || "/guest";
+        if (!explicitRedirect) {
+          if (userData?.role === "super_admin") {
+            destination = "/super-admin";
+          } else if (userData?.role === "admin") {
+            destination = "/admin";
+          }
         }
 
         router.push(destination);

@@ -3,7 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DiwaniyaStatusBadge } from "@/components/diwaniya/status-badge";
 import { RegistrationForm } from "@/components/registration/registration-form";
-import { Building2, MapPin, Users, User } from "lucide-react";
+import { Building2, MapPin, Users, User, Lock } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface DiwaniyaPageProps {
   params: Promise<{ slug: string }>;
@@ -97,6 +99,45 @@ export default async function DiwaniyaPage({ params }: DiwaniyaPageProps) {
 
   // Check if user is banned from this diwaniya
   const ban = await getUserBan(diwaniya.id, user.id);
+
+  // Invite-only access: viewer must own this diwaniya, be a super-admin, hold an
+  // invite-granted access row, or already have a registration here.
+  const isOwner = diwaniya.admin_id === user.id;
+
+  const { data: roleRow } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  const isSuperAdmin =
+    (roleRow as { role: string } | null)?.role === "super_admin";
+
+  const { data: accessRow } = await supabase
+    .from("diwaniya_access")
+    .select("id")
+    .eq("diwaniya_id", diwaniya.id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const hasAccess =
+    isOwner || isSuperAdmin || !!accessRow || !!existingRegistration;
+
+  if (!hasAccess) {
+    return (
+      <div className="mx-auto max-w-md py-16 text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+          <Lock className="h-6 w-6 text-muted-foreground" />
+        </div>
+        <h1 className="font-display text-2xl">This diwaniya is invite-only</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          You need an invite link from the host to view and request a seat.
+        </p>
+        <Link href="/guest" className="mt-6 inline-block">
+          <Button variant="outline">Back to dashboard</Button>
+        </Link>
+      </div>
+    );
+  }
 
   const isBanned = !!ban;
   const isFull = diwaniya.current_capacity >= diwaniya.max_capacity;

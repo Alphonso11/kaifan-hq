@@ -25,11 +25,11 @@ export default async function GuestDashboard() {
   
   const typedProfile = profile as { name: string } | null;
 
-  // Get open diwaniyas count
-  const { count: openDiwaniyasCount } = await supabase
-    .from("diwaniyas")
+  // Get count of diwaniyas this guest has joined (invite-only model)
+  const { count: joinedCount } = await supabase
+    .from("diwaniya_access")
     .select("*", { count: "exact", head: true })
-    .eq("is_open", true);
+    .eq("user_id", user.id);
 
   // Get user's registrations
   const { data: registrations } = await supabase
@@ -56,14 +56,14 @@ export default async function GuestDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Open Diwaniyas
+              Diwaniyas Joined
             </CardTitle>
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="font-display text-3xl">{openDiwaniyasCount || 0}</div>
+            <div className="font-display text-3xl">{joinedCount || 0}</div>
             <p className="text-xs text-muted-foreground">
-              Available for registration
+              Via your invite links
             </p>
           </CardContent>
         </Card>
@@ -97,14 +97,24 @@ export default async function GuestDashboard() {
         </Card>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
+        <Link href="/host/new">
+          <Button variant="gold">
+            <Building2 className="h-4 w-4" />
+            Host your own diwaniya
+          </Button>
+        </Link>
         <Link href="/guest/diwaniyas">
-          <Button>Browse Diwaniyas</Button>
+          <Button variant="outline">My Diwaniyas</Button>
         </Link>
         <Link href="/guest/registrations">
-          <Button variant="outline">View My Registrations</Button>
+          <Button variant="outline">My Registrations</Button>
         </Link>
       </div>
+
+      <p className="text-sm text-muted-foreground">
+        Diwaniyas are invite-only — open an invite link from a host to join one.
+      </p>
     </div>
   );
 }

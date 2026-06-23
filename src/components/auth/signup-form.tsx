@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -23,8 +23,14 @@ import { Loader2 } from "lucide-react";
 
 export function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+
+  const redirectParam = searchParams.get("redirect");
+  const loginHref = redirectParam
+    ? `/login?redirect=${encodeURIComponent(redirectParam)}`
+    : "/login";
 
   const {
     register,
@@ -81,7 +87,7 @@ export function SignupForm() {
           description: "Please check your email to verify your account.",
         });
 
-        router.push("/login");
+        router.push(loginHref);
       }
     } catch {
       toast({
@@ -178,7 +184,7 @@ export function SignupForm() {
           </Button>
           <p className="text-sm text-center text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/login" className="text-primary hover:underline">
+            <Link href={loginHref} className="text-primary hover:underline">
               Sign in
             </Link>
           </p>
