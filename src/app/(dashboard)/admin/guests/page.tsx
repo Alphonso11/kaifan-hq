@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import {
   Table,
   TableBody,
@@ -36,7 +36,9 @@ interface GuestWithUser {
 }
 
 async function getApprovedGuests(diwaniyaId: string): Promise<GuestWithUser[] | null> {
-  const supabase = await createClient();
+  // Service client: ownership already confirmed by the caller; RLS otherwise
+  // hides guest user rows (names would show as "Unknown").
+  const supabase = createServiceClient();
   const { data } = await supabase
     .from("registrations")
     .select(

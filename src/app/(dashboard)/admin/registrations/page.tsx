@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import {
   Table,
   TableBody,
@@ -35,7 +35,9 @@ interface RegistrationWithUser {
 }
 
 async function getRegistrations(diwaniyaId: string): Promise<RegistrationWithUser[] | null> {
-  const supabase = await createClient();
+  // Service client: the caller already confirmed ownership of this diwaniya,
+  // and RLS otherwise hides the guests' user rows (names show as "Unknown").
+  const supabase = createServiceClient();
   const { data } = await supabase
     .from("registrations")
     .select(

@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DiwaniyaStatusBadge } from "@/components/diwaniya/status-badge";
 import { RegistrationForm } from "@/components/registration/registration-form";
@@ -139,6 +139,16 @@ export default async function DiwaniyaPage({ params }: DiwaniyaPageProps) {
     );
   }
 
+  // The host's name lives in another user's row, which RLS hides from viewers.
+  // Fetch it with the service client so it isn't shown as "Unknown".
+  const service = createServiceClient();
+  const { data: hostRow } = await service
+    .from("users")
+    .select("name")
+    .eq("id", diwaniya.admin_id)
+    .maybeSingle();
+  const hostName = (hostRow as { name: string } | null)?.name || "Host";
+
   const isBanned = !!ban;
   const isFull = diwaniya.current_capacity >= diwaniya.max_capacity;
 
@@ -192,7 +202,7 @@ export default async function DiwaniyaPage({ params }: DiwaniyaPageProps) {
                 <div>
                   <p className="text-sm font-medium">Host</p>
                   <p className="text-sm text-muted-foreground">
-                    {(diwaniya.admin as { name: string })?.name || "Unknown"}
+                    {hostName}
                   </p>
                 </div>
               </div>

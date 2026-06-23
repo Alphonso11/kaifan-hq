@@ -12,6 +12,7 @@ export interface User extends Record<string, unknown> {
   updated_at: string;
   banned: boolean;
   ban_reason: string | null;
+  can_host: boolean;
 }
 
 export interface Diwaniya extends Record<string, unknown> {

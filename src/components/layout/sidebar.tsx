@@ -50,11 +50,12 @@ const superAdminNav: NavItem[] = [
 
 interface SidebarProps {
   role: UserRole;
+  canHost?: boolean;
   isOpen?: boolean;
   onClose?: () => void;
 }
 
-export function Sidebar({ role, isOpen, onClose }: SidebarProps) {
+export function Sidebar({ role, canHost, isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
 
   const navItems =
@@ -62,7 +63,7 @@ export function Sidebar({ role, isOpen, onClose }: SidebarProps) {
       ? superAdminNav
       : role === "admin"
       ? adminNav
-      : guestNav;
+      : guestNav.filter((item) => item.href !== "/host/new" || canHost);
 
   const roleLabel =
     role === "super_admin"

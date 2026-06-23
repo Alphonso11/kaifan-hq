@@ -19,11 +19,15 @@ export default async function GuestDashboard() {
   // Get user profile
   const { data: profile } = await supabase
     .from("users")
-    .select("name")
+    .select("name, can_host, role")
     .eq("id", user.id)
     .single();
-  
-  const typedProfile = profile as { name: string } | null;
+
+  const typedProfile = profile as
+    | { name: string; can_host: boolean; role: string }
+    | null;
+  const canHost =
+    !!typedProfile?.can_host || typedProfile?.role === "super_admin";
 
   // Get count of diwaniyas this guest has joined (invite-only model)
   const { count: joinedCount } = await supabase
@@ -98,12 +102,14 @@ export default async function GuestDashboard() {
       </div>
 
       <div className="flex flex-wrap gap-4">
-        <Link href="/host/new">
-          <Button variant="gold">
-            <Building2 className="h-4 w-4" />
-            Host your own diwaniya
-          </Button>
-        </Link>
+        {canHost && (
+          <Link href="/host/new">
+            <Button variant="gold">
+              <Building2 className="h-4 w-4" />
+              Host your own diwaniya
+            </Button>
+          </Link>
+        )}
         <Link href="/guest/diwaniyas">
           <Button variant="outline">My Diwaniyas</Button>
         </Link>

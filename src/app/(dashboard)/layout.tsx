@@ -21,6 +21,7 @@ export default function DashboardLayout({
     <div className="flex h-screen overflow-hidden">
       <Sidebar
         role={user?.role || "guest"}
+        canHost={user?.can_host || user?.role === "super_admin"}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />

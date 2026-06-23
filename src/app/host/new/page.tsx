@@ -14,12 +14,16 @@ import { diwaniyaSchema, type DiwaniyaInput } from "@/lib/validations";
 import { generateSlug } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Building2, ArrowLeft } from "lucide-react";
+import { useUser } from "@/hooks/use-user";
+import { Loader2, Building2, ArrowLeft, Lock } from "lucide-react";
 
 export default function NewHostDiwaniyaPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { user, isLoading: isUserLoading } = useUser();
   const [isLoading, setIsLoading] = useState(false);
+
+  const canHost = !!user?.can_host || user?.role === "super_admin";
 
   const {
     register,
@@ -79,6 +83,28 @@ export default function NewHostDiwaniyaPage() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  // Hosting is gated — only super-admins or accounts granted hosting can create.
+  if (!isUserLoading && !canHost) {
+    return (
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background p-4">
+        <div className="lattice-gold pointer-events-none fixed inset-0 z-0 opacity-50" />
+        <div className="relative z-10 w-full max-w-md rounded-2xl border bg-card p-8 text-center shadow-sm">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+            <Lock className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <h1 className="font-display text-2xl">Hosting isn&apos;t open yet</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Hosting a diwaniya is currently invitation-only. Reach out to the
+            Kaifan HQ team to have hosting enabled for your account.
+          </p>
+          <Link href="/guest" className="mt-6 inline-block">
+            <Button variant="outline">Back to dashboard</Button>
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
