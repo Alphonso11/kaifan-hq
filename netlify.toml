@@ -4,6 +4,11 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  # NEXT_PUBLIC_* vars are intentionally embedded in the client bundle.
+  # The Supabase URL and publishable/anon key are public by design (RLS
+  # protects the data). The real secret, SUPABASE_SERVICE_ROLE_KEY, is NOT
+  # listed here, so it stays scanned and server-only.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY"
 
 # Official Next.js runtime — handles SSR, middleware, server components,
 # and route handlers as serverless/edge functions.
