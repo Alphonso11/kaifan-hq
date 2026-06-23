@@ -10,52 +10,56 @@ export function useUser() {
 
   useEffect(() => {
     const supabase = createClient();
+    let active = true;
 
-    async function getUser() {
+    async function loadProfile(userId: string) {
       try {
-        const {
-          data: { user: authUser },
-        } = await supabase.auth.getUser();
-
-        if (authUser) {
-          const { data, error } = await supabase
-            .from("users")
-            .select("*")
-            .eq("id", authUser.id)
-            .single<User>();
-
-          if (error) {
-            console.error("Error fetching user profile:", error);
-          }
-          setUser(data);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    getUser();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_OUT") {
-        setUser(null);
-      } else if (session?.user) {
         const { data } = await supabase
           .from("users")
           .select("*")
-          .eq("id", session.user.id)
+          .eq("id", userId)
           .single<User>();
-
-        setUser(data);
+        if (active) setUser(data);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      } finally {
+        if (active) setIsLoading(false);
       }
-      setIsLoading(false);
+    }
+
+    // Initial load from the stored session (local read, no network).
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!active) return;
+      if (session?.user) {
+        loadProfile(session.user.id);
+      } else {
+        setIsLoading(false);
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      // IMPORTANT: never call other supabase methods synchronously inside this
+      // callback — it holds the auth lock and would deadlock. Defer with a
+      // timeout so the callback returns and releases the lock first.
+      if (event === "SIGNED_OUT") {
+        setUser(null);
+        setIsLoading(false);
+        return;
+      }
+      if (session?.user) {
+        const userId = session.user.id;
+        setTimeout(() => {
+          if (active) loadProfile(userId);
+        }, 0);
+      } else {
+        setIsLoading(false);
+      }
     });
 
     return () => {
+      active = false;
       subscription.unsubscribe();
     };
   }, []);

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Building2, LogOut, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,6 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
-  const router = useRouter();
   const { user } = useUser();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -31,8 +29,8 @@ export function Header({ onMenuClick }: HeaderProps) {
     setIsLoggingOut(true);
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
+    // Full navigation so the cleared session cookies are re-read by middleware.
+    window.location.href = "/login";
   }
 
   const getProfileRoute = () => {
