@@ -4,24 +4,19 @@ import { useState } from "react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { useUser } from "@/hooks/use-user";
-import { Loader2 } from "lucide-react";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isLoading } = useUser();
+  const { user } = useUser();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
+  // Render the shell immediately. Access is already enforced server-side by
+  // middleware, and the role only drives which sidebar links show — so we
+  // never block the whole page on the client-side auth check (which could
+  // otherwise leave the app stuck on a spinner).
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar
