@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Kaifan HQ — "Desert Majlis" theme
+   Warm sand + deep teal + muted gold. Gulf hospitality.
+   ============================================================ */
+@layer base {
+  :root {
+    --background: 39 52% 94%;
+    --foreground: 176 21% 14%;
+    --card: 43 100% 99%;
+    --card-foreground: 176 21% 14%;
+    --popover: 43 100% 99%;
+    --popover-foreground: 176 21% 14%;
+    --primary: 177 74% 21%;
+    --primary-foreground: 42 62% 96%;
+    --secondary: 40 46% 88%;
+    --secondary-foreground: 176 21% 14%;
+    --muted: 40 69% 95%;
+    --muted-foreground: 164 8% 37%;
+    --accent: 165 26% 91%;
+    --accent-foreground: 177 74% 17%;
+    --destructive: 10 59% 45%;
+    --destructive-foreground: 42 62% 96%;
+    --border: 39 42% 84%;
+    --input: 39 42% 84%;
+    --ring: 177 74% 21%;
+    --radius: 0.9rem;
+
+    /* brand extensions */
+    --gold: 42 53% 54%;
+    --gold-foreground: 176 69% 13%;
+    --gold-deep: 41 54% 40%;
+    --gold-tint: 43 62% 89%;
+    --teal-700: 177 74% 17%;
+    --teal-900: 176 69% 13%;
+    --teal-tint: 165 26% 91%;
+    --sidebar: 176 69% 13%;
+    --cream: 42 62% 96%;
+    --sand-line: 39 42% 84%;
+  }
+
+  .dark {
+    --background: 177 30% 8%;
+    --foreground: 42 28% 90%;
+    --card: 177 26% 11%;
+    --card-foreground: 42 28% 90%;
+    --popover: 177 26% 11%;
+    --popover-foreground: 42 28% 90%;
+    --primary: 168 38% 48%;
+    --primary-foreground: 176 69% 9%;
+    --secondary: 177 18% 16%;
+    --secondary-foreground: 42 28% 90%;
+    --muted: 177 16% 15%;
+    --muted-foreground: 40 10% 64%;
+    --accent: 177 22% 18%;
+    --accent-foreground: 42 28% 90%;
+    --destructive: 10 50% 48%;
+    --destructive-foreground: 42 62% 96%;
+    --border: 177 16% 19%;
+    --input: 177 16% 19%;
+    --ring: 168 38% 48%;
+
+    --gold: 42 53% 56%;
+    --gold-foreground: 176 69% 9%;
+    --gold-deep: 43 50% 62%;
+    --gold-tint: 41 30% 22%;
+    --teal-700: 177 40% 26%;
+    --teal-900: 177 35% 10%;
+    --teal-tint: 177 22% 18%;
+    --sidebar: 177 35% 10%;
+    --cream: 42 62% 96%;
+    --sand-line: 177 16% 19%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv01";
+  }
+}
+
+@layer components {
+  /* subtle mashrabiya lattice texture */
+  .lattice {
+    background-image:
+      repeating-linear-gradient(45deg, hsl(var(--sand-line)) 0 1px, transparent 1px 16px),
+      repeating-linear-gradient(-45deg, hsl(var(--sand-line)) 0 1px, transparent 1px 16px);
+  }
+  .lattice-gold {
+    background-image:
+      repeating-linear-gradient(45deg, hsl(var(--gold) / 0.16) 0 1px, transparent 1px 18px),
+      repeating-linear-gradient(-45deg, hsl(var(--gold) / 0.16) 0 1px, transparent 1px 18px);
+  }
+}
